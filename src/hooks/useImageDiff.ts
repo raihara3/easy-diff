@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import resemble from 'resemblejs';
 
 interface ImageDiffResult {
   diffImageUrl: string | null;
@@ -18,12 +17,6 @@ export const useImageDiff = (image1: File | null, image2: File | null) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Ensure resemble is loaded
-    if (typeof resemble === 'undefined') {
-      console.error('resemble.js is not loaded');
-      return;
-    }
-    
     if (!image1 || !image2) {
       // Reset states if files are cleared
       setImage1Url(null);
@@ -36,10 +29,12 @@ export const useImageDiff = (image1: File | null, image2: File | null) => {
     const reader2 = new FileReader();
     let url1: string, url2: string;
 
-    const compareImages = () => {
+    const compareImages = async () => {
       if (!url1 || !url2) return;
 
       setIsLoading(true);
+
+      const resemble = (await import('resemblejs')).default;
 
       resemble.outputSettings({
         errorColor: {
