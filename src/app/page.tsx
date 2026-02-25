@@ -1,14 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from 'next/dynamic';
 import { Header } from "@/components/layout/Header";
 import { InputSection } from "@/components/input/InputSection";
 import { DiffViewer } from "@/components/diff/DiffViewer";
-import ImageDiffViewer from "@/components/diff/ImageDiffViewer";
 import { useDiff } from "@/hooks/useDiff";
-import { useImageDiff } from "@/hooks/useImageDiff";
 
 type InputMode = 'text' | 'image';
+
+const ImageDiffSection = dynamic(
+  () => import('@/components/diff/ImageDiffSection').then(mod => mod.ImageDiffSection),
+  { ssr: false, loading: () => <div className="w-full rounded-lg border bg-white p-4 dark:bg-gray-900 dark:border-gray-700"><div className="w-full h-64 bg-gray-100 rounded-md flex items-center justify-center text-gray-400 dark:bg-gray-800 dark:text-gray-500">Loading Image Diff...</div></div> }
+);
 
 export default function Home() {
   // State for text diff
@@ -19,7 +23,6 @@ export default function Home() {
   // State for image diff
   const [image1, setImage1] = useState<File | null>(null);
   const [image2, setImage2] = useState<File | null>(null);
-  const { image1Url, image2Url, diffResult: imageDiffResult } = useImageDiff(image1, image2);
 
   // Shared state
   const [mode, setMode] = useState<InputMode>('text');
@@ -41,13 +44,7 @@ export default function Home() {
         {mode === 'text' ? (
           <DiffViewer result={textDiffResult} />
         ) : (
-          <ImageDiffViewer
-            image1Url={image1Url}
-            image2Url={image2Url}
-            diffImageUrl={imageDiffResult.diffImageUrl}
-            analysisTime={imageDiffResult.analysisTime}
-            mismatchPercentage={imageDiffResult.mismatchPercentage}
-          />
+          <ImageDiffSection image1={image1} image2={image2} />
         )}
       </main>
     </div>
