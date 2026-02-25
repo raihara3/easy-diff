@@ -60,7 +60,7 @@ export const useImageDiff = (image1: File | null, image2: File | null) => {
             // @ts-ignore
             diffImageUrl: data.getImageDataUrl(),
             analysisTime: data.analysisTime,
-            mismatchPercentage: parseFloat(data.misMatchPercentage),
+            mismatchPercentage: data.misMatchPercentage,
           });
           setIsLoading(false);
         });
